@@ -1,0 +1,16 @@
+{
+  "name": "inotebook-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "both": "concurrently \"npm run dev --prefix inotebook-frontend\" \"nodemon index.js --prefix inotebook-backend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

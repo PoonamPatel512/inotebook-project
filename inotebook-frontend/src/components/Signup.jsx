@@ -1,0 +1,73 @@
+import React, { useState , useContext} from 'react';
+import { useNavigate } from 'react-router-dom'
+import { AlertContext } from "../context/alert/AlertContext"
+
+function Signup() {
+  const {alert , showAlert } = useContext(AlertContext)
+  let navigate = useNavigate();
+
+  const [credentials, setCredentials] = useState({ name: "" , email: "", password: "" , cpassword: ""})
+
+  
+  const handleSubmit = async (e) => {
+    if (credentials.password !== credentials.cpassword) {
+    showAlert("danger", "Passwords do not match");
+    return;
+    }
+    e.preventDefault();
+    const response = await fetch("http://localhost:5000/api/auth/createuser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name: credentials.name , email: credentials.email, password: credentials.password }),
+    });
+    const json = await response.json();
+    console.log(json)
+    
+    if (json.success) {
+      showAlert("success", "Signed up successfully");
+      //save the authtoken and redirect
+      localStorage.setItem("token", json.authtoken);
+      navigate("/");
+    } else {
+      showAlert("danger", json.error || "Signup failed");
+    }
+  }
+
+  const onChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value })
+  }
+  return (
+    <div className='container'>
+      <h2 className="text-center mb-4">Join iNotebook!</h2>
+      <p className="text-muted text-center">Sign up to start writing and organizing your notes</p>
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group my-2">
+          <label className="my-2" htmlFor="name">name</label>
+          <input type="text" className="form-control" id="name" name="name" value={credentials.name} placeholder="Enter name" onChange={onChange}
+          />
+        </div>
+        <div className="form-group my-2">
+          <label className="my-2" htmlFor="email">email</label>
+          <input type="email" className="form-control" id="email" name="email" value={credentials.email} placeholder="Enter email" onChange={onChange}
+          />
+        </div>
+        <div className="form-group my-2">
+          <label className="my-2" htmlFor="password">password</label>
+          <input type="password" className="form-control" id="password" name="password" value={credentials.password} placeholder="password" onChange={onChange} />
+        </div>
+        <div className="form-group my-2">
+          <label className="my-2" htmlFor="cpassword">Confirm Password</label>
+          <input type="password" className="form-control" id="cpassword" name="cpassword" value={credentials.cpassword} placeholder="cpassword" onChange={onChange} />
+        </div>
+        <button type="submit" className="btn btn-primary my-2">
+          Signup
+        </button>
+      </form>
+    </div>
+  )
+}
+
+export default Signup
